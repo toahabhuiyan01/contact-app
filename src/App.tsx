@@ -1,9 +1,11 @@
 import { Button } from '@mui/material';
 import { useState } from 'react';
-import './App.css';
+
+import AllContacts from './app/all-contacts/AllContacts';
 import CheckBoxGlobal from './components/CheckBoxGlobal/CheckBoxGlobal';
 import ModalGlobal from './components/ModalGlobal/ModalGlobal';
 
+import './App.css';
 
 function App() {
   const [open, setOpen] = useState<boolean>(false);
@@ -19,9 +21,7 @@ function App() {
   }
 
   const handleSubmit = () => {
-    alert("hello")
   }
-
 
   return (
     <div className="App">
@@ -45,6 +45,8 @@ function App() {
           />
         </>
       </ModalGlobal>
+
+      <AllContacts />
     </div>
   );
 }

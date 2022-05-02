@@ -1,3 +1,4 @@
 module.exports = {
-    defaultStorageKey: "userData"
+    defaultStorageKey: "userData",
+    brandColor: "#1AA898"
 }

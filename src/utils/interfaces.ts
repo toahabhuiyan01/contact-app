@@ -16,3 +16,9 @@ export interface CheckboxProps {
     checked: boolean;
     onChange: functionVoid;
 }
+
+export interface lol {
+    id: Number;
+    name: String;
+    type: String;
+}
