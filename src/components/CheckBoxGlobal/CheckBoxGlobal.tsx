@@ -1,6 +1,5 @@
 import Checkbox from '@material-ui/core/Checkbox';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import { brandColor } from '../../utils/GlobalConstants';
 import { CheckboxProps } from '../../utils/interfaces';
 

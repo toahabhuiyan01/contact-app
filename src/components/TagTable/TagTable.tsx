@@ -1,7 +1,7 @@
 import React from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { selectTags, tag, tag as TG, tags } from '../../utils/interfaces';
+import { selectTags, tag, tags } from '../../utils/interfaces';
 import './static/style.scss';
 import { brandColor } from '../../utils/GlobalConstants';
 

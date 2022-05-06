@@ -4,7 +4,6 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import axios from 'axios';
-import AxiosServices from './networks/ApiService';
 import { setDataStorage } from './utils/manageLocalStorage';
 axios.interceptors.request.use(config => {
   let userData = JSON.parse(localStorage.getItem("userData") || "{}");

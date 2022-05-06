@@ -1,39 +1,33 @@
 import { useState, useRef, useLayoutEffect, useCallback, useEffect } from 'react'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
 import TableContainer from '@material-ui/core/TableContainer'
-import TableRow from '@material-ui/core/TableRow'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import AddIcon from '@mui/icons-material/Add';
+import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
+import axios from 'axios';
+import debounce from 'lodash/debounce';
 
-import {Contact, lol, messageSR, selectTags, tag, tags} from "./../../utils/interfaces"
-import SinglePerson from '../../components/SinglePerson/SinglePerson'
+import {Contact, messageSR, selectTags, tag, tags} from "./../../utils/interfaces"
+import SinglePerson from '../../components/SinglePerson/SinglePerson';
 
-import './static/style.scss';
 import TagTable from '../../components/TagTable/TagTable'
 import CheckBoxGlobal from '../../components/CheckBoxGlobal/CheckBoxGlobal'
-import AxiosServices from '../../networks/ApiService';
 import {Contacts} from './../../utils/interfaces';
-import axios from 'axios'
 
-const generateItems = (amount: number) => {
-  const arr = Array.from(Array(amount))
-  return arr.map((number: number, i: number) => ({
-    id: i,
-    name: `hafiz ${i + 1}`,
-    type: `Item Type ${i + 1}`,
-  }))
-}
+import './static/style.scss';
 
 const AllContacts = () => {
   const tableEl = useRef<HTMLHeadingElement>(null);
-  const [rows, setRows] = useState(generateItems(50));
   const [allTags, setAllTags] = useState<tag[]>([]);
-  
+
   const [totalContacts, setTotalContacts] = useState<number>(0);
   const [selectedContacts, setSelectedContacts] = useState<selectTags>({});
+  const [allSelected, setAllSelected] = useState<boolean>(false);
+  const [totalSelected, setTotalSelected] = useState<number>(0);
+  const [nextPage, setNextPage] = useState<string | null>("");
+  const [lastQuery, setLastQuery] = useState<string>("");
 
-  const [allContacts, setAllContacts] = useState<Contact[]>([])
+  const [allContacts, setAllContacts] = useState<Contact[]>([]);
+
   const [loading, setLoading] = useState(false);
   const [distanceBottom, setDistanceBottom] = useState(0);
   const [includeTags, setIncludeTags] = useState<selectTags>({});
@@ -54,18 +48,33 @@ const AllContacts = () => {
 
   const [hasMore, setHasMore] = useState<boolean>(true);
 
-  const getContacts = () => {
-    axios.get<Contacts>("contacts?returnTotalCount=true")
+  const getContacts = (queryStr: string = "", isInit: boolean=true) => {
+    setLoading(true);
+    axios.get<Contacts>(`contacts?returnTotalCount=true${queryStr}`)
     .then(res => {
       console.log(res.data);
-      setAllContacts(res.data.contacts);
+      if(isInit) {
+        setAllContacts(res.data.contacts);
+      }
+      else {
+        setAllContacts(prev => ([...prev, ...res.data.contacts]));
+      }
       setTotalContacts(res.data.totalCount);
+      setNextPage(res.data.nextPage);
+
+      if(res.data.nextPage) {
+        setHasMore(true);
+      }
+      else {
+        setHasMore(false);
+      }
+
     })
     .catch(err => {
 
     })
     .finally(() => {
-
+      setLoading(false);
     })
   }
   
@@ -83,25 +92,75 @@ const AllContacts = () => {
     .finally(() => {
 
     })
+  };
+
+  const onClickSave = (newQ: any="") => {
+    const maxMessagesRecvStr = messageReceived.max ? `&maxMessagesRecv=${messageReceived.max}` : "";
+    const minMessagesRecvStr = messageReceived.min ? `&minMessagesRecv=${messageReceived.min}` : "";
+    const maxMessagesSentStr = messageSent.max ? `&maxMessagesSent=${messageSent.max}` : "";
+    const minMessagesSentStr = messageSent.min ? `&minMessagesSent=${messageSent.min}` : "";
+    const tags = Object.entries(includeTags)
+        .filter(([key, value]) => value === true)
+        .map(([key, value]) => key);
+
+    const notTags = Object.entries(excludeTags)
+        .filter(([key, value]) => value === true)
+        .map(([key, value]) => key);
+
+
+    const tagStr = tags.length ? `&tags=${encodeURI(JSON.stringify(tags))}` : "";
+    const notTagStr = notTags.length ? `&notTags=${encodeURI(JSON.stringify(notTags))}` : "";
+
+    const queryStr = newQ.length ? `&q=${newQ}` : query.length ? `&q=${query}` : "";
+    console.log(tags)
+
+    const finalStr = `${maxMessagesRecvStr}${minMessagesRecvStr}${maxMessagesSentStr}${minMessagesSentStr}${tagStr}${notTagStr}${queryStr}`;
+    setLastQuery(finalStr);
+    getContacts(finalStr);
   }
+
+  const onSelectAll = (state: boolean) => {
+    allContacts.map(contact => {
+      setSelectedContacts(prev => {
+        return {
+          ...prev,
+          [contact.id]: state
+        }
+      })
+    });
+    setAllSelected(state);
+    if(state) {
+      setTotalSelected(allContacts.length);
+    }
+    else {
+      setTotalSelected(0);
+    }
+  };
 
   useEffect(() => {
     getContacts();
     getTags();
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    if(allContacts.length) {
+      // getMiddle();
+      if(totalSelected === allContacts.length) {
+        setAllSelected(true);
+      }
+      else {
+        setAllSelected(false);
+      }
+    }
+    else {
+      setAllSelected(false);
+    }
+  }, [totalSelected, allContacts]);
 
   const loadMore = useCallback(() => {
-    const loadItems = async () => {
-        await new Promise((resolve, reject) => {
-            setTimeout(() => {
-                setRows(generateItems(rows.length + 50));
-                setLoading(false);
-            }, 5000)
-        })
-    }
-    setLoading(true);
-    loadItems();
-  }, [rows])
+    const newQuery = `${lastQuery}&page=${encodeURI(nextPage)}`
+    getContacts(newQuery, false);
+  }, [allContacts])
 
   const scrollListener = useCallback(() => {
     if(tableEl?.current) {
@@ -125,13 +184,19 @@ const AllContacts = () => {
     }
   }, [scrollListener]);
 
+  const getContactsByQuery = useCallback(
+      debounce((value: string) => onClickSave(value), 500)
+      , []);
+
+
   return (
     <div className='main-body-container w-100'>
       <div className="left-container">
+      {/*{getMiddle()}*/}
         <>
           <div className='filter-header'>
             <div className="audiance">
-                <h3>Audience</h3>
+                <FormatAlignRightIcon /><h3>Audience</h3>
             </div>
             <div className="contacts">
               {totalContacts} Contacts
@@ -229,10 +294,14 @@ const AllContacts = () => {
           </div>
         </>
 
+        <div className="save-filter-section">
+          <button onClick={onClickSave} className="save-filters">Save Filters</button>
+        </div>
+
 
       </div>
       <div className="right-container">
-        <TableContainer style={{ maxWidth: '900px', margin: 'auto', maxHeight: '100vh', overflowX: "hidden" }} ref={tableEl}>
+        <TableContainer style={{maxWidth: '900px', margin: 'auto', maxHeight: '100vh', overflowX: "hidden" }} ref={tableEl}>
           <div className="table-header">
             <div className="contacts-head">
               <h3>All Contacts ({totalContacts})</h3>
@@ -246,15 +315,18 @@ const AllContacts = () => {
                 placeholder='Search Contacts'
                 value={query}
                 onChange={e => {
-                  setQuery(e.target.value)
+                  setQuery(e.target.value);
+                  getContactsByQuery(e.target.value);
                 }}
               />
             </div>
             <div className="select-box">
               <div className='left-select'>
                 <CheckBoxGlobal
-                  checked={false}
-                  onChange={() => {}}
+                  checked={allSelected}
+                  onChange={(e) => {
+                    onSelectAll(e.target.checked);
+                  }}
                 /> <span>Select All</span>
               </div>
               <div className="right-select">
@@ -262,19 +334,21 @@ const AllContacts = () => {
               </div>
             </div>
           </div>
-          {loading && <CircularProgress style={{ position: 'absolute', top: '100px' }} />}
-          <Table stickyHeader>
-            <TableBody>
-              {rows.map(({ id, name, type }: lol) => (
-                <>
-                    <TableRow style={{display: "flex", width: "100%", justifyContent: "space-between", alignItems: "center", marginRight: "15px"}}>
-                        <SinglePerson />
-                    </TableRow>
-                </>
-              ))}
-            </TableBody>
-          </Table>
+          {allContacts.map((contact: Contact) => (
+              <div key={`contact-${contact.id}`} style={{display: "flex", width: "100%", justifyContent: "space-between", alignItems: "center", marginRight: "15px"}}>
+                <SinglePerson
+                    contact={contact}
+                    selectedContacts={selectedContacts}
+                    onSelectRemove={setSelectedContacts}
+                    setTotalSelected={setTotalSelected}
+                />
+              </div>
+          ))}
+          {
+            !allContacts.length && <p style={{textAlign: "center"}}>No Contacts Found!</p>
+          }
         </TableContainer>
+        {loading && <CircularProgress style={{ position: 'absolute', top: '50%', left: "50%"}} />}
       </div>
     </div>
   )

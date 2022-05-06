@@ -1,6 +1,7 @@
 .table-container-main {
     border-radius: 15px;
     overflow: hidden;
+    min-height: 70px;
 
     .table-container {
         display: flex;
@@ -8,8 +9,22 @@
         width: 100%;
         max-height: 145px;
         overflow: scroll;
-        -ms-overflow-style: none;  /* IE and Edge */
+        -ms-overflow-style: none; /* IE and Edge */
         scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+            border-radius: 100vw;
+            margin-block: 0.5em;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: #AAAAAA;
+            border-radius: 100vw;
+        }
 
         .table-data {
             font-size: 14px;
@@ -18,14 +33,18 @@
             padding-left: 15px;
             display: flex;
             justify-content: space-between;
-            
+
             .tag-name {
                 text-align: left;
                 cursor: pointer;
+                font-weight: 500;
             }
+
             .action-block {
                 display: flex;
                 justify-content: space-around;
+
+
                 svg {
                     margin-right: 15px;
                     cursor: pointer;
@@ -36,19 +55,23 @@
                 }
             }
         }
+
         .table-data:hover {
             svg:first-child {
                 display: block !important;
             }
         }
+
         .table-data:nth-child(even) {
             background: #FFFFFF
         }
+
         .table-data:nth-child(odd) {
             background: #F3F5F9
         }
+
         .table-data:hover {
-            background-color: #DCECEE;
+            background-color: #dcecee;
         }
     }
 }

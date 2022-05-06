@@ -14,7 +14,7 @@ export interface ModalProps {
 
 export interface CheckboxProps {
     checked: boolean;
-    onChange: functionVoid;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export interface lol {
@@ -37,7 +37,7 @@ export interface selectTags {
 export interface tags {
     tags: tag[] | [];
     selectedTags?: selectTags;
-    cbSelect?: React.Dispatch<React.SetStateAction<object>>
+    cbSelect?: React.Dispatch<React.SetStateAction<selectTags>>;
 }
 
 export interface img {
@@ -51,25 +51,32 @@ export interface chat {
 }
 
 export interface Contact {
-    id: String;
-    accountId: String;
-    type: String;
-    name: String;
-    phoneNumber: String;
-    platformNames: String[];
+    id: string;
+    accountId: string;
+    type: string;
+    name: string;
+    phoneNumber: string;
+    platformNames: string[];
     messagesSent: number;
     messagesReceived: number;
-    createdAt: String;
-    img?: img;
+    createdAt: string;
+    img?: string | null;
     assignee?: any;
-    tags: tags;
+    tags: tag[];
 
+}
+
+export interface SinglePerson {
+    contact?: Contact;
+    selectedContacts?: selectTags;
+    onSelectRemove?: React.Dispatch<React.SetStateAction<selectTags>>;
+    setTotalSelected?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export interface Contacts {
     totalCount?: number;
     contacts?: Contact[];
-    nextPage?: String;
+    nextPage?: string;
 }
 
 export interface messageSR {

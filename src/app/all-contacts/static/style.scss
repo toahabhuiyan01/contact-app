@@ -2,6 +2,8 @@
     display: flex;
     flex-direction: row;
     width: 100%;
+    overflow: hidden;
+    margin-bottom: 10px;
 
     .left-container {
         display: flex;
@@ -10,13 +12,27 @@
         margin-left: 15px;
         margin-right: 15px;
         background-color: #FFFFFF;
+        position: relative;
+        //margin-top: 10px;
+        max-height: calc(100vh - 0px);
+        overflow: scroll;
 
         .filter-header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding-right: 15px;
             margin-bottom: 10px;
-            
+
+            .audiance {
+                display: flex;
+                align-items: center;
+
+                h3 {
+                    margin-left: 15px;
+                }
+            }
+
             .contacts {
                 font-size: 15px;
                 color: #B0B6BC;
@@ -41,23 +57,66 @@
                 padding-left: 10px;
                 font-family: 'Poppins', sans-serif;
             }
+
             input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
                 padding-left: 15px;
                 color: #B6C1D4;
-             }
+            }
+
             input::-moz-placeholder {
                 color: #B6C1D4;
             }
+
             input:-moz-placeholder {
                 color: #B6C1D4;
             }
         }
+
+        .save-filter-section {
+            position: absolute;
+            bottom: 15px;
+            width: 100%;
+            margin-top: 15px;
+
+            .save-filters {
+                color: white;
+                background-color: #1AA898;
+                cursor: pointer;
+                border: none;
+                padding: 10px 0;
+                border-radius: 8px;
+                width: 100%;
+                font-weight: 800;
+                font-size: 12px;
+            }
+        }
     }
-    
+
     .right-container {
         width: 70%;
         background-color: #FDFDFD;
+        position: relative;
         overflow: hidden;
+        //margin-top: 10px;
+        max-height: calc(100vh - 0px);
+        min-height: calc(100vh - 0px);
+
+        .MuiTableContainer-root {
+
+            &::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            &::-webkit-scrollbar-track {
+                border-radius: 100vw;
+                margin-block: 0.5em;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background-color: #AAAAAA;
+                border-radius: 100vw;
+            }
+        }
 
         .table-header {
             display: flex;
@@ -76,15 +135,18 @@
                     margin-left: 6px;
                     margin-right: 20px;
                     cursor: pointer;
-    
+
                     svg {
                         width: 18px;
                         height: 18px;
                         border: 16px #1AA898;
                         background-color: #1AA898;
                         color: white;
-                        border-radius: 40%;
+                        //border-radius: 40%;
                         margin-left: 3px;
+                        border-radius: 8px;
+                        padding: 2px;
+                        margin-right: 15px;
                     }
                 }
             }
@@ -110,10 +172,12 @@
                 input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
                     padding-left: 15px;
                     color: #B6C1D4;
-                 }
+                }
+
                 input::-moz-placeholder {
                     color: #B6C1D4;
                 }
+
                 input:-moz-placeholder {
                     color: #B6C1D4;
                 }
@@ -130,17 +194,27 @@
                         font-size: 13px;
                     }
                 }
+
                 .right-select {
+                    margin-right: 15px;
+
                     button {
                         border: none;
                         padding: 5px 7px;
                         background-color: #1AA898;
                         color: #FFFFFF;
-                        border-radius: 5px;
+                        border-radius: 8px;
                         font-weight: bold;
                     }
                 }
             }
         }
+    }
+}
+
+@media (max-height: 655px) {
+    .save-filter-section {
+        position: inherit !important;
+        margin-top: 25px !important;
     }
 }

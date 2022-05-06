@@ -1,7 +1,4 @@
-import { useState } from 'react';
-
 import AllContacts from './app/all-contacts/AllContacts';
-
 
 import './App.css';
 import './SCSS/global.scss';
