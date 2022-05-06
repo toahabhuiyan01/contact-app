@@ -94,7 +94,7 @@ const AllContacts = () => {
     })
   };
 
-  const onClickSave = (newQ: any="") => {
+  const onClickSave = (newQ: string="") => {
     const maxMessagesRecvStr = messageReceived.max ? `&maxMessagesRecv=${messageReceived.max}` : "";
     const minMessagesRecvStr = messageReceived.min ? `&minMessagesRecv=${messageReceived.min}` : "";
     const maxMessagesSentStr = messageSent.max ? `&maxMessagesSent=${messageSent.max}` : "";
@@ -295,7 +295,7 @@ const AllContacts = () => {
         </>
 
         <div className="save-filter-section">
-          <button onClick={onClickSave} className="save-filters">Save Filters</button>
+          <button onClick={() => onClickSave()} className="save-filters">Save Filters</button>
         </div>
 
 
