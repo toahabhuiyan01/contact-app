@@ -6,12 +6,13 @@ function ModalGlobal(props: ModalProps) {
 
     const style = {
         position: 'absolute' as 'absolute',
-        top: '50%',
+        top: '30%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         width: "fitContent",
         bgcolor: 'background.paper',
         border: '2px solid #000',
+        borderRadius: "15px",
         boxShadow: 20,
         pt: 2,
         px: 4,

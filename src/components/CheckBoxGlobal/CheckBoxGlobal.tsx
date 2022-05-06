@@ -9,8 +9,8 @@ function CheckBoxGlobal(props: CheckboxProps) {
     <Checkbox
         checked={props.checked}
         onChange={props.onChange}
-        icon={<RadioButtonUncheckedIcon />}
-        checkedIcon={<CheckCircleIcon style={{color: brandColor}} />}
+        icon={<CheckCircleIcon style={{color: "#B6C1D4", width: "20px"}} />}
+        checkedIcon={<CheckCircleIcon style={{color: brandColor, width: "20px"}} />}
     />
   )
 }

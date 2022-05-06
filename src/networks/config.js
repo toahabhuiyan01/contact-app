@@ -1,3 +1,3 @@
 module.exports = {
-    api_base_url: "https://base_url.com/"
+    api_base_url: "https://api-im.chatdaddy.tech/"
 }

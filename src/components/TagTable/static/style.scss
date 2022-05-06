@@ -1,0 +1,54 @@
+.table-container-main {
+    border-radius: 15px;
+    overflow: hidden;
+
+    .table-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-height: 145px;
+        overflow: scroll;
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;
+
+        .table-data {
+            font-size: 14px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 15px;
+            display: flex;
+            justify-content: space-between;
+            
+            .tag-name {
+                text-align: left;
+                cursor: pointer;
+            }
+            .action-block {
+                display: flex;
+                justify-content: space-around;
+                svg {
+                    margin-right: 15px;
+                    cursor: pointer;
+                }
+
+                svg:first-child {
+                    display: none;
+                }
+            }
+        }
+        .table-data:hover {
+            svg:first-child {
+                display: block !important;
+            }
+        }
+        .table-data:nth-child(even) {
+            background: #FFFFFF
+        }
+        .table-data:nth-child(odd) {
+            background: #F3F5F9
+        }
+        .table-data:hover {
+            background-color: #DCECEE;
+        }
+    }
+}
