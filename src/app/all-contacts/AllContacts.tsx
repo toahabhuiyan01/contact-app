@@ -6,7 +6,7 @@ import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
 import axios from 'axios';
 import debounce from 'lodash/debounce';
 
-import {Contact, messageSR, selectTags, tag, tags} from "./../../utils/interfaces"
+import {Contact, messageSR, queryObject, selectTags, tag, tags} from "./../../utils/interfaces"
 import SinglePerson from '../../components/SinglePerson/SinglePerson';
 
 import TagTable from '../../components/TagTable/TagTable'
@@ -15,8 +15,11 @@ import {Contacts} from './../../utils/interfaces';
 
 import './static/style.scss';
 
+const qs = require('qs');
+
 const AllContacts = () => {
   const tableEl = useRef<HTMLHeadingElement>(null);
+  const isMounted = useRef<boolean>(true);
   const [allTags, setAllTags] = useState<tag[]>([]);
 
   const [totalContacts, setTotalContacts] = useState<number>(0);
@@ -24,7 +27,7 @@ const AllContacts = () => {
   const [allSelected, setAllSelected] = useState<boolean>(false);
   const [totalSelected, setTotalSelected] = useState<number>(0);
   const [nextPage, setNextPage] = useState<string | null>("");
-  const [lastQuery, setLastQuery] = useState<string>("");
+  const [lastQuery, setLastQuery] = useState<queryObject>(null);
 
   const [allContacts, setAllContacts] = useState<Contact[]>([]);
 
@@ -48,9 +51,15 @@ const AllContacts = () => {
 
   const [hasMore, setHasMore] = useState<boolean>(true);
 
-  const getContacts = (queryStr: string = "", isInit: boolean=true) => {
+  const getContacts = (paramObj?: queryObject, isInit: boolean=true) => {
     setLoading(true);
-    axios.get<Contacts>(`contacts?returnTotalCount=true${queryStr}`)
+    // const params = new URLSearchParams(paramObj);
+    axios.get<Contacts>(`contacts`, {
+      params: paramObj,
+      paramsSerializer: function(params) {
+        return qs.stringify(params, {arrayFormat: 'repeat'})
+      }
+    })
     .then(res => {
       console.log(res.data);
       if(isInit) {
@@ -95,10 +104,6 @@ const AllContacts = () => {
   };
 
   const onClickSave = (newQ: string="") => {
-    const maxMessagesRecvStr = messageReceived.max ? `&maxMessagesRecv=${messageReceived.max}` : "";
-    const minMessagesRecvStr = messageReceived.min ? `&minMessagesRecv=${messageReceived.min}` : "";
-    const maxMessagesSentStr = messageSent.max ? `&maxMessagesSent=${messageSent.max}` : "";
-    const minMessagesSentStr = messageSent.min ? `&minMessagesSent=${messageSent.min}` : "";
     const tags = Object.entries(includeTags)
         .filter(([key, value]) => value === true)
         .map(([key, value]) => key);
@@ -107,16 +112,19 @@ const AllContacts = () => {
         .filter(([key, value]) => value === true)
         .map(([key, value]) => key);
 
+    const payload: queryObject = {
+      returnTotalCount: true,
+      maxMessagesRecv: Number(messageReceived.max) || undefined,
+      minMessagesRecv: Number(messageReceived.min) || undefined,
+      maxMessagesSent: Number(messageSent.max) || undefined,
+      minMessagesSent: Number(messageSent.min) || undefined,
+      tags: tags,
+      notTags: notTags,
+      q: newQ.length ? newQ : query || undefined
+    }
 
-    const tagStr = tags.length ? `&tags=${encodeURI(JSON.stringify(tags))}` : "";
-    const notTagStr = notTags.length ? `&notTags=${encodeURI(JSON.stringify(notTags))}` : "";
-
-    const queryStr = newQ.length ? `&q=${newQ}` : query.length ? `&q=${query}` : "";
-    console.log(tags)
-
-    const finalStr = `${maxMessagesRecvStr}${minMessagesRecvStr}${maxMessagesSentStr}${minMessagesSentStr}${tagStr}${notTagStr}${queryStr}`;
-    setLastQuery(finalStr);
-    getContacts(finalStr);
+    setLastQuery(payload);
+    getContacts(payload);
   }
 
   const onSelectAll = (state: boolean) => {
@@ -138,6 +146,9 @@ const AllContacts = () => {
   };
 
   useEffect(() => {
+    if(!isMounted.current) return;
+    isMounted.current = false;
+    
     getContacts();
     getTags();
   }, []);
@@ -158,7 +169,10 @@ const AllContacts = () => {
   }, [totalSelected, allContacts]);
 
   const loadMore = useCallback(() => {
-    const newQuery = `${lastQuery}&page=${encodeURI(nextPage)}`
+    const newQuery: queryObject = {
+      ...lastQuery,
+      page: encodeURI(nextPage)
+    }
     getContacts(newQuery, false);
   }, [allContacts])
 
@@ -192,7 +206,6 @@ const AllContacts = () => {
   return (
     <div className='main-body-container w-100'>
       <div className="left-container">
-      {/*{getMiddle()}*/}
         <>
           <div className='filter-header'>
             <div className="audiance">

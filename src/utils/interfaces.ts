@@ -79,6 +79,18 @@ export interface Contacts {
     nextPage?: string;
 }
 
+export interface queryObject {
+    returnTotalCount?: boolean;
+    maxMessagesRecv?: number | string;
+    minMessagesRecv?: number | string;
+    maxMessagesSent?: number | string;
+    minMessagesSent?: number | string;
+    tags?: string[];
+    notTags?: string[];
+    q?: string;
+    page?: string;
+}
+
 export interface messageSR {
     min: string;
     max: string;
