@@ -148,8 +148,8 @@ const AllContacts = () => {
   useEffect(() => {
     if(!isMounted.current) return;
     isMounted.current = false;
-    
-    getContacts();
+
+    getContacts({returnTotalCount: true});
     getTags();
   }, []);
 
@@ -198,8 +198,17 @@ const AllContacts = () => {
     }
   }, [scrollListener]);
 
+  const saveByQueryMiddleware = (value: string) => {
+    const newQuery: queryObject = {
+      ...lastQuery,
+      q: value,
+      returnTotalCount: true
+    }
+    getContacts(newQuery, false);
+  }
+
   const getContactsByQuery = useCallback(
-      debounce((value: string) => onClickSave(value), 500)
+      debounce((value: string) => saveByQueryMiddleware(value), 500)
       , []);
 
 
