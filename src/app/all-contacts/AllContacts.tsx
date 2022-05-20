@@ -14,6 +14,8 @@ import CheckBoxGlobal from '../../components/CheckBoxGlobal/CheckBoxGlobal'
 import {Contacts} from './../../utils/interfaces';
 
 import './static/style.scss';
+import { LinearProgress } from '@material-ui/core';
+import ModalGlobal from '../../components/ModalGlobal/ModalGlobal';
 
 const qs = require('qs');
 
@@ -21,6 +23,10 @@ const AllContacts = () => {
   const tableEl = useRef<HTMLHeadingElement>(null);
   const isMounted = useRef<boolean>(true);
   const [allTags, setAllTags] = useState<tag[]>([]);
+
+  const showedModal = !!JSON.parse(localStorage.getItem("initialModal"));
+  const [initialModal, setInitialModal] = useState<boolean>(!showedModal && false);
+  const [progress, setProgress] = useState<number>(0);
 
   const [totalContacts, setTotalContacts] = useState<number>(0);
   const [selectedContacts, setSelectedContacts] = useState<selectTags>({});
@@ -50,6 +56,22 @@ const AllContacts = () => {
   
 
   const [hasMore, setHasMore] = useState<boolean>(true);
+
+  useEffect(() => {
+    if(progress < 100) {
+      setTimeout(() => {
+        setProgress(prevState => (prevState + 1));
+      }, 10);
+    }
+    else {
+      onCloseModal();
+    }
+  }, [progress]);
+
+  const onCloseModal = () => {
+    localStorage.setItem("initialModal", "true");
+    setInitialModal(false);
+  }
 
   const getContacts = (paramObj?: queryObject, isInit: boolean=true) => {
     setLoading(true);
@@ -204,7 +226,7 @@ const AllContacts = () => {
       q: value,
       returnTotalCount: true
     }
-    getContacts(newQuery, false);
+    getContacts(newQuery, true);
   }
 
   const getContactsByQuery = useCallback(
@@ -372,6 +394,18 @@ const AllContacts = () => {
         </TableContainer>
         {loading && <CircularProgress style={{ position: 'absolute', top: '50%', left: "50%"}} />}
       </div>
+      <ModalGlobal
+        hideBackdrop={false}
+        open={initialModal}
+        handleOpen={() => setInitialModal(true)}
+        handleSubmit={onCloseModal}
+        submitButtonText={"Close"}
+      >
+        <>
+          You need to Click on <i><strong>Save Filters</strong></i> to search with tags.
+          <LinearProgress style={{width: "500px", marginTop: "10px", height: "1px"}} variant="determinate" value={progress} />
+        </>
+      </ModalGlobal>
     </div>
   )
 }

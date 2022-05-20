@@ -11,8 +11,7 @@ function ModalGlobal(props: ModalProps) {
         transform: 'translate(-50%, -50%)',
         width: "fitContent",
         bgcolor: 'background.paper',
-        border: '2px solid #000',
-        borderRadius: "15px",
+        borderRadius: "7px",
         boxShadow: 20,
         pt: 2,
         px: 4,
@@ -33,17 +32,19 @@ function ModalGlobal(props: ModalProps) {
             aria-describedby="transition-modal-description"
         >
             <Fade in={props.open}>
-                <Box sx={{ ...style}}>
+                <Box  sx={{ ...style}}>
                     {props.children}
 
+                    <Box style={{marginTop: "10px", display: "flex", justifyContent: "right"}}>
                     {
                         props.handleClose &&
                         <Button onClick={props.handleClose}>Close</Button>
                     }
                     {
                         props.handleSubmit && 
-                        <Button onClick={props.handleSubmit}>{props.submitButtonText || "Submit"}</Button>
+                        <Button style={{marginLeft: "10px"}} variant='contained' onClick={props.handleSubmit}>{props.submitButtonText || "Submit"}</Button>
                     }
+                    </Box>
                 </Box>
             </Fade>
         </Modal>
