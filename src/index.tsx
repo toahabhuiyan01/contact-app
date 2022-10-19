@@ -28,8 +28,8 @@ axios.interceptors.response.use(response => {
   if (error.response.status === 401) {
 
       const refreshTokenBody = {
-        "refreshToken": "059c420e-7424-431f-b23b-af0ecabfe7b8",
-        "teamId": "a001994b-918b-4939-8518-3377732e4e88"
+        "refreshToken": "03412bc4-9da1-44f3-96e4-92246605ef60",
+        "teamId": "d0b96942-77aa-46cf-833d-f34a8c111c9e"
       }
       return axios.post(`token`, refreshTokenBody)
           .then((response: any) => {
